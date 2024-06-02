@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../lib/version.h"
-#include "../inc/print.h"
+#include "../print.h"
 
 TEST(lib, version) {
     ASSERT_GT(version(), 0);

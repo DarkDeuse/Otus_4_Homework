@@ -1,5 +1,5 @@
 
-#include "../inc/print.h"
+#include "print.h"
 
 
 

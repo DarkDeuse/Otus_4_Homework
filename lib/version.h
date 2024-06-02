@@ -1,3 +1,3 @@
-#pragma ones
+#pragma once
 
 int version();

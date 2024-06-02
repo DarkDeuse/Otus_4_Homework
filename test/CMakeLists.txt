@@ -10,12 +10,11 @@ include(GoogleTest)
 
 add_executable(${PROJECT_NAME} test.cpp)
 
-set_target_properties(
-        ${PROJECT_NAME} PROPERTIES
-        CXX_STANDARD 14
-        CXX_STANDARD_REQUIRED ON
-        COMPILE_OPTIONS -Wpedantic -Wall -Wextra
-)
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  else ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
+endif()
 
 target_link_libraries(
   ${PROJECT_NAME}
