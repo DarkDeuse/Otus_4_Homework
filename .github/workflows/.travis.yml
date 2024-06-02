@@ -1,32 +1,40 @@
-language: cpp
-addons:
-  apt:
-    packages:
-      - doxygen
-      - graphviz
-install:
-  - sudo apt-get install libgtest-dev -y # installing the gtest development package
-before_script:
-  - cd /usr/src/gtest
-  - sudo env "PATH=$PATH" cmake CMakeLists.txt
-  - sudo make
-  - sudo cp *.a /usr/lib # copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
-  - cd "${TRAVIS_BUILD_DIR}"
-script:
-  - cmake .
-  - cmake --build .
-  - cmake --build . --target test
-  - cmake --build . --target package
-  - doxygen Doxyfile
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script:
-    - curl -T print_ip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -ugeorge-garnov:$BINTRAY_API_KEY "https://api.bintray.com/content/george-garnov/otus/04_doxygen/$TRAVIS_BUILD_NUMBER/print_ip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
-  - provider: pages
-    skip-cleanup: true
-    local_dir: html/
-    github-token: $GITHUB_TOKEN
-    keep-history: true
-    on:
-     branch: master
+name: 'C++ CI'
+
+on:
+  push:
+    branches:
+      - main
+      - feature/github_actions
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - run: sudo apt-get update && sudo apt-get install libgtest-dev -y
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_GOOGLE_TEST=ON
+      - run: cmake --build .
+      - run: cmake --build . --target test
+      - run: cmake --build . --target package
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./print_ip-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: print_ip-0.0.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package

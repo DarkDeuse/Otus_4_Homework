@@ -6,9 +6,7 @@ else()
     project(tests VERSION 0.0.1)
 endif()
 
-find_package(GTest REQUIRED)
-
-include_directories(${GTEST_INCLUDE_DIR})
+include(GoogleTest)
 
 add_executable(${PROJECT_NAME} test.cpp)
 
