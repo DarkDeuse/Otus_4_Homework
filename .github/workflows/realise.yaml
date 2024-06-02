@@ -10,34 +10,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory:
-          - print_ip
     permissions: write-all
-    env:
-      PROJECT_NAME: ${{ matrix.directory }} 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - run: sudo apt-get update && sudo apt-get install cmake libgtest-dev -y
-        working-directory: ${{ matrix.directory }}
-      - name: Build ${{ matrix.directory }} directory
-        run: |
-          for dir in "${{ matrix.directory }}"; do
-            echo "Building $dir directory"
-            cmake -B $dir/build -S $dir -D BUILD_NUMBER=${{ github.run_number }}
-            cmake --build $dir/build
-            cmake --build $dir/build --target package
-          done
+      - run: sudo apt-get update && sudo apt-get install cmake libboost-test-dev -y
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      - run: cmake --build .
+      - run: cmake --build . --target package
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.PROJECT_NAME }}-${{ github.run_number }}
+          tag_name: ${{ github.run_number }}
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
