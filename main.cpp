@@ -1,59 +1,18 @@
+/// @file main.cpp
+/// @brief OTUS ДЗ№4 SFINAE, Doxygen
 
-#include "print.h"
+// Local
+#include "print_ip.h"
 
-
-
-int main()
+int main(int, char *[])
 {
+    print_ip(int8_t{-1});                            // 255
+    print_ip(int16_t{0});                            // 0.0
+    print_ip(int32_t{2130706433});                   // 127.0.0.1
+    print_ip(int64_t{8875824491850138409});          // 123.45.67.89.101.112.131.41
+    print_ip(std::string{"Hello, World!"});          // Hello, World!
+    print_ip(std::vector<int>{100, 200, 300, 400});  // 100.200.300.400
+    print_ip(std::list<short>{400, 300, 200, 100});  // 400.300.200.100
 
-  //Печать адреса как char
-  std::cout << "char:\t";
-  print(char(-1));
-  std::cout << std::endl;
-  
-  //Печать адреса как short
-  std::cout << "short:\t";
-  print(short(0));
-  std::cout << std::endl;
-  
-  //Печать адреса как int
-  std::cout << "int:\t";
-  print(int(2130706433));
-  std::cout << std::endl;
-  
-  //Печать адреса как long
-  std::cout << "long:\t";
-  print(long(8875824491850138409));
-  std::cout << std::endl;
-  
-  //Печать адреса как std::string
-  std::cout << "string:\t";
-  print(std::string{"Hello world!"});
-  std::cout << std::endl;
-  
-  //Печать адреса как std::vector
-  std::cout << "vector:\t";
-  std::vector<int> v{int(2130706433), int(2130706433), int(2130706433)};
-  print(v);
-  std::cout << std::endl;
-  
-  //Печать адреса как std::list
-  std::cout << "list:\t";
-  std::list<int> l{int(2130706433), int(2130706433), int(2130706433)};
-  print(l);
-  std::cout << std::endl;
-  
-  //Опционально. Печать адреса как std::tuple
-  print(std::make_tuple(char(-1), short(0), int(2130706433), long(8875824491850138409)));
-  std::cout << std::endl;
-  print(char(-1), 42, 100000);
-  std::cout << std::endl;
-    
-    
-  // // float
-  // print(1.2345);
-  // std::cout << std::endl;
-
-  return 0;
+    return 0;
 }
-
